@@ -2,4 +2,4 @@
 nixPkgs = ["ffmpeg", "yt-dlp"]
 
 [start]
-cmd = "npm run db:migrate && npm start"
+cmd = "npm run db:migrate:prod && npm start"
