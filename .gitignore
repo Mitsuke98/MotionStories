@@ -1,0 +1,10 @@
+node_modules/
+.env
+.env.local
+dist/
+.next/
+public/frames/
+server/public/frames/
+*.log
+.DS_Store
+local-pgdata/

@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cd \"/Users/mac/claude workspace /video analyser/web\" && mkdir -p lib components \"app/jobs/[id]\" \"app/library/[id]\" \"app/recreate/[id]\" app/login app/signup app/settings app/library app/recreate app/gallery && ls app)",
+      "Bash(node -e ' *)"
+    ]
+  }
+}
