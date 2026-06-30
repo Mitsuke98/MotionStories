@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { api } from "@/lib/api";
+import { api, saveToken } from "@/lib/api";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -16,7 +16,8 @@ export default function LoginPage() {
     setError(null);
     setLoading(true);
     try {
-      await api.login(email, password);
+      const res = await api.login(email, password);
+      saveToken(res.token);
       router.push("/");
     } catch (err: any) {
       setError(err.message);

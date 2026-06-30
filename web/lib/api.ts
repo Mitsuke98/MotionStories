@@ -1,13 +1,28 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
+function getToken(): string | null {
+  if (typeof window === "undefined") return null;
+  return localStorage.getItem("ms_token");
+}
+
+export function saveToken(token: string) {
+  localStorage.setItem("ms_token", token);
+}
+
+export function clearToken() {
+  localStorage.removeItem("ms_token");
+}
+
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
+  const token = getToken();
+  const isFormData = init?.body instanceof FormData;
   const res = await fetch(`${API_URL}${path}`, {
     ...init,
-    credentials: "include",
-    headers:
-      init?.body instanceof FormData
-        ? init?.headers
-        : { "Content-Type": "application/json", ...init?.headers },
+    headers: {
+      ...(isFormData ? {} : { "Content-Type": "application/json" }),
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...init?.headers,
+    },
   });
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
@@ -22,12 +37,16 @@ export interface User {
   email: string;
 }
 
+export interface AuthResponse extends User {
+  token: string;
+}
+
 export const api = {
   signup: (email: string, password: string) =>
-    request<User>("/auth/signup", { method: "POST", body: JSON.stringify({ email, password }) }),
+    request<AuthResponse>("/auth/signup", { method: "POST", body: JSON.stringify({ email, password }) }),
   login: (email: string, password: string) =>
-    request<User>("/auth/login", { method: "POST", body: JSON.stringify({ email, password }) }),
-  logout: () => request("/auth/logout", { method: "POST" }),
+    request<AuthResponse>("/auth/login", { method: "POST", body: JSON.stringify({ email, password }) }),
+  logout: () => { clearToken(); return Promise.resolve(); },
   me: () => request<User>("/auth/me"),
 
   listApiKeys: () =>
@@ -54,7 +73,7 @@ export const api = {
     }),
   submitFeedback: (docId: string, body: { rating?: number; text?: string; frameTransitionId?: string }) =>
     request(`/documents/${docId}/feedback`, { method: "POST", body: JSON.stringify(body) }),
-  exportUrl: (docId: string) => `${API_URL}/documents/${docId}/export`,
+  exportUrl: (docId: string) => `${API_URL}/documents/${docId}/export?token=${getToken()}`,
 
   getGallery: () => request<{ patterns: any[] }>("/gallery"),
 

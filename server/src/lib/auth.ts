@@ -3,7 +3,6 @@ import jwt from "jsonwebtoken";
 import type { Request, Response, NextFunction } from "express";
 
 const JWT_SECRET = process.env.JWT_SECRET || "dev-secret-change-me";
-const COOKIE_NAME = "motion_story_session";
 
 export async function hashPassword(password: string) {
   return bcrypt.hash(password, 10);
@@ -17,9 +16,10 @@ export function signSession(userId: string) {
   return jwt.sign({ sub: userId }, JWT_SECRET, { expiresIn: "30d" });
 }
 
+// kept for backwards compat but no longer used for cross-domain
 export function setSessionCookie(res: Response, token: string) {
   const prod = process.env.NODE_ENV === "production";
-  res.cookie(COOKIE_NAME, token, {
+  res.cookie("motion_story_session", token, {
     httpOnly: true,
     sameSite: prod ? "none" : "lax",
     secure: prod,
@@ -28,7 +28,7 @@ export function setSessionCookie(res: Response, token: string) {
 }
 
 export function clearSessionCookie(res: Response) {
-  res.clearCookie(COOKIE_NAME);
+  res.clearCookie("motion_story_session");
 }
 
 export interface AuthedRequest extends Request {
@@ -40,7 +40,12 @@ export function requireAuth(
   res: Response,
   next: NextFunction
 ) {
-  const token = req.cookies?.[COOKIE_NAME];
+  // Accept Bearer token (cross-domain) or cookie (same-domain dev)
+  const authHeader = req.headers.authorization;
+  const bearerToken = authHeader?.startsWith("Bearer ") ? authHeader.slice(7) : null;
+  const cookieToken = req.cookies?.["motion_story_session"];
+  const token = bearerToken || cookieToken;
+
   if (!token) {
     res.status(401).json({ error: "Not authenticated" });
     return;

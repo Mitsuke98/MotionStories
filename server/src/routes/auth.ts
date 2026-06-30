@@ -32,8 +32,9 @@ authRouter.post("/signup", async (req, res) => {
     .insert(users)
     .values({ email, passwordHash })
     .returning();
-  setSessionCookie(res, signSession(user.id));
-  res.status(201).json({ id: user.id, email: user.email });
+  const token = signSession(user.id);
+  setSessionCookie(res, token);
+  res.status(201).json({ id: user.id, email: user.email, token });
 });
 
 authRouter.post("/login", async (req, res) => {
@@ -45,8 +46,9 @@ authRouter.post("/login", async (req, res) => {
     res.status(401).json({ error: "Invalid email or password" });
     return;
   }
-  setSessionCookie(res, signSession(user.id));
-  res.json({ id: user.id, email: user.email });
+  const token = signSession(user.id);
+  setSessionCookie(res, token);
+  res.json({ id: user.id, email: user.email, token });
 });
 
 authRouter.post("/logout", (_req, res) => {

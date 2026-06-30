@@ -1,4 +1,5 @@
 import "dotenv/config";
+import YTDlpWrap from "yt-dlp-wrap";
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
@@ -9,6 +10,16 @@ import { jobsRouter } from "./routes/jobs.js";
 import { documentsRouter } from "./routes/documents.js";
 import { galleryRouter } from "./routes/gallery.js";
 import { recreateRouter } from "./routes/recreate.js";
+
+// Auto-download yt-dlp binary if not present
+if (!process.env.YTDLP_PATH) {
+  try {
+    await (YTDlpWrap as any).default.downloadFromGithub();
+    console.log("yt-dlp downloaded.");
+  } catch (e) {
+    console.warn("yt-dlp auto-download failed:", e);
+  }
+}
 
 const app = express();
 
