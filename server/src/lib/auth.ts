@@ -18,10 +18,11 @@ export function signSession(userId: string) {
 }
 
 export function setSessionCookie(res: Response, token: string) {
+  const prod = process.env.NODE_ENV === "production";
   res.cookie(COOKIE_NAME, token, {
     httpOnly: true,
-    sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
+    sameSite: prod ? "none" : "lax",
+    secure: prod,
     maxAge: 30 * 24 * 60 * 60 * 1000,
   });
 }
