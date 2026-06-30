@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/index.ts",
-    "build": "node scripts/install-yt-dlp.mjs && tsc -p tsconfig.json",
+    "build": "tsc -p tsconfig.json",
     "start": "node dist/index.js",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "tsx src/db/migrate.ts",
