@@ -1,5 +1,11 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
+export function resolveFrameUrl(url: string): string {
+  if (!url) return "";
+  if (url.startsWith("http")) return url;
+  return `${API_URL}${url}`;
+}
+
 function getToken(): string | null {
   if (typeof window === "undefined") return null;
   return localStorage.getItem("ms_token");
@@ -73,7 +79,7 @@ export const api = {
     }),
   submitFeedback: (docId: string, body: { rating?: number; text?: string; frameTransitionId?: string }) =>
     request(`/documents/${docId}/feedback`, { method: "POST", body: JSON.stringify(body) }),
-  exportUrl: (docId: string) => `${API_URL}/documents/${docId}/export?token=${getToken()}`,
+  exportUrl: (docId: string) => `${API_URL}/documents/${docId}/export?token=${encodeURIComponent(getToken() || "")}`,
 
   getGallery: () => request<{ patterns: any[] }>("/gallery"),
 

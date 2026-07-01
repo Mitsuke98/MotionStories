@@ -40,11 +40,12 @@ export function requireAuth(
   res: Response,
   next: NextFunction
 ) {
-  // Accept Bearer token (cross-domain) or cookie (same-domain dev)
+  // Accept Bearer token, query param (for file downloads), or cookie
   const authHeader = req.headers.authorization;
   const bearerToken = authHeader?.startsWith("Bearer ") ? authHeader.slice(7) : null;
+  const queryToken = typeof req.query?.token === "string" ? req.query.token : null;
   const cookieToken = req.cookies?.["motion_story_session"];
-  const token = bearerToken || cookieToken;
+  const token = bearerToken || queryToken || cookieToken;
 
   if (!token) {
     res.status(401).json({ error: "Not authenticated" });

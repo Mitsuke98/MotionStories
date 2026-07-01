@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { resolveFrameUrl } from "@/lib/api";
 
 export interface FrameStepProps {
   stepNumber: number;
@@ -49,12 +50,12 @@ export function FrameStep({
       </div>
       <div className="grid grid-cols-2 gap-3 sm:gap-4">
         <img
-          src={frameFromUrl}
+          src={resolveFrameUrl(frameFromUrl)}
           alt={`Frame ${stepNumber} start`}
           className="aspect-[9/16] w-full rounded-[var(--radius-md)] border border-[var(--color-border)] object-cover"
         />
         <img
-          src={frameToUrl}
+          src={resolveFrameUrl(frameToUrl)}
           alt={`Frame ${stepNumber} end`}
           className="aspect-[9/16] w-full rounded-[var(--radius-md)] border border-[var(--color-border)] object-cover"
         />
