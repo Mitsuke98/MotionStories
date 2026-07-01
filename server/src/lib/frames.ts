@@ -2,18 +2,11 @@ import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 import fs from "node:fs/promises";
 import path from "node:path";
-import { createRequire } from "node:module";
 
 const execFileAsync = promisify(execFile);
-const require = createRequire(import.meta.url);
 
 function getFfmpegPath(): string {
-  if (process.env.FFMPEG_PATH) return process.env.FFMPEG_PATH;
-  try {
-    return require("ffmpeg-static") as string;
-  } catch {
-    return "ffmpeg";
-  }
+  return process.env.FFMPEG_PATH || "/usr/local/bin/ffmpeg";
 }
 
 const MAX_FRAMES = Number(process.env.MAX_FRAMES_PER_VIDEO || 20);
