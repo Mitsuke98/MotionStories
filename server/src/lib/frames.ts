@@ -22,7 +22,7 @@ async function detectSceneCutTimestamps(videoPath: string): Promise<number[]> {
     "-i",
     videoPath,
     "-vf",
-    "select='gt(scene,0.25)',showinfo",
+    "select='gt(scene,0.15)',showinfo",
     "-vsync",
     "vfr",
     "-f",
